@@ -19,30 +19,51 @@ makedepends=(
   'python-installer'
 )
 source=("$pkgname::git+$url#tag=v$pkgver")
-sha512sums=('a51c7d87acc1c63b69e62db80f387f36b4f2ad9b64efca1ca01a0b9998bd7dba4de5a245c5e2a5408e30817360d5b503ede243fbeac435896e6368134b38f7ea')
-b2sums=('bb6e76dcf064191742f1729c3177717c8da0a5ccee4039a92bbac86f08555d1a97f79df69d23d8fe23f4f4a6f4725b51f270e0ced13bd2b39770ddd9e7c16729')
+sha512sums=(
+  'a51c7d87acc1c63b69e62db80f387f36b4f2ad9b64efca1ca01a0b9998bd7dba4de5a245c5e2a5408e30817360d5b503ede243fbeac435896e6368134b38f7ea'
+)
+b2sums=(
+  'bb6e76dcf064191742f1729c3177717c8da0a5ccee4039a92bbac86f08555d1a97f79df69d23d8fe23f4f4a6f4725b51f270e0ced13bd2b39770ddd9e7c16729'
+)
 
 prepare() {
-  cd "$pkgname"
-
+  cd \
+    "${pkgname}"
   # download dependencies
-  cargo fetch --locked --target "$CARCH-unknown-linux-gnu"
+  cargo \
+    fetch \
+      --locked \
+      --target \
+      "${CARCH}-unknown-linux-gnu"
 }
 
 build() {
-  cd "$pkgname"
-
-  python -m build --wheel --no-isolation
+  cd \
+    "${pkgname}"
+  "${_py}" \
+    -m \
+      build \
+    --wheel \
+    --no-isolation
 }
 
 package() {
-  cd "$pkgname"
-
-  python -m installer --destdir="$pkgdir" dist/*.whl
-
+  cd \
+    "${pkgname}"
+  "${_py}" \
+    -m \
+      installer \
+    --destdir="${pkgdir}" \
+    dist/*.whl
   # symlink license file
-  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
-  install -d "$pkgdir/usr/share/licenses/$pkgname"
-  ln -s "$site_packages/rpds_py-$pkgver.dist-info/license_files/LICENSE" \
-    "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  local \
+    site_packages=$( \
+      python \
+        -c \
+	  "import site; print(site.getsitepackages()[0])")
+  install \
+    -d \
+    "${pkgdir}/usr/share/licenses/${pkgname}"
+  ln -s "${site_packages}/rpds_py-${pkgver}.dist-info/license_files/LICENSE" \
+    "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
