@@ -53,14 +53,20 @@ b2sums=(
 )
 
 prepare() {
+  local \
+    _target
+  _target="${CARCH}-unknown-linux-gnu"
+  [[ "${_os}" == "Android" ]] && \
+    _target="${CARCH}-linux-androideabi"
   cd \
     "${pkgname}"
   # download dependencies
+  CARGO_HTTP_MULTIPLEXING=false \
   cargo \
     fetch \
       --locked \
       --target \
-      "${CARCH}-unknown-linux-gnu"
+      "${_target}"
 }
 
 build() {
