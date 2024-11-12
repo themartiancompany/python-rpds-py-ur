@@ -4,11 +4,25 @@ _os="$( \
   uname \
     -o)"
 _py="python"
-_pkg="rpds-py"
+_pyver="$( \
+  "${_py}" \
+    -V | \
+    awk \
+      '{print $2}')"
+_pymajver="${_pyver%.*}"
+_pyminver="${_pymajver#*.}"
+_pynextver="${_pymajver%.*}.$(( \
+  ${_pyminver} + 1))"
+_Pkg=rpds
+_pkg="${_Pkg}-py"
 pkgname="${_py}-${_pkg}"
 pkgver=0.19.0
 pkgrel=1
-pkgdesc='Python bindings to the Rust rpds crate for persistent data structures'
+_pkgdesc=(
+  'Python bindings to the Rust rpds'
+  'crate for persistent data structures'
+)
+pkgdesc="${_pkgdesc[*]}"
 arch=(
   'x86_64'
   'arm'
@@ -19,12 +33,15 @@ arch=(
   'i686'
   'powerpc'
 )
-url='https://github.com/crate-py/rpds'
+_http="https://github.com"
+_ns="crate-py"
+url="${_http}/${_ns}/${_Pkg}"
 license=(
   'MIT'
 )
 depends=(
-  "${_py}"
+  "${_py}>=${_pymajver}"
+  "${_py}<${_pynextver}"
 )
 if [[ "${_os}" == "GNU/Linux" ]]; then
   depends+=(
